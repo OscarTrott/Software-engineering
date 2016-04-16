@@ -1,22 +1,36 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Abdullah Rowaished
  */
-public AntAbdul implements AntInterface
+public class AntAbdul implements AntInterface
 {
-  private AntState STATE = AntState.INITIAL;
-  private Command[] commands;
+  private AntState STATE = AntState.INITIAL; //all ants start at an INITIAL state
+  private String[] commands;
   
   public AntAbdul(File brain) {
-    
+      String content = null;
+      //BELOW: the input File is converted into one String, then is parsed into the field 'commands'
+      try {
+          content = new Scanner(brain).useDelimiter("//Z").next();
+      } catch (FileNotFoundException ex) {
+          Logger.getLogger(AntAbdul.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      commands = parseBrain(content);
   }
   /**
    * converts the input file of the brain into an array of commands.
    * @param brain file from constructor
    * @return array of commands
    */
-  private Command[] parseBrain(File brain) {
-    
+  private String[] parseBrain(String brain) {
+      String[] spliteratedBrain = brain.split(" ");
+      return spliteratedBrain;
   }
   
   public void move() {
@@ -51,10 +65,6 @@ public AntAbdul implements AntInterface
     //TODO
   }
   
-  public void setState() {
-    //TODO
-  }
-  
   public void setResting() {
     //TODO
   }
@@ -75,6 +85,7 @@ interface AntInterface {
   public void setState();
   public void setResting();
 }
-enum AntStates {
+
+enum AntState {
   INITIAL, SEARCHING, RETURNING, HUNTING, DEAD
 }
