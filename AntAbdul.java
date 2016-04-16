@@ -4,8 +4,18 @@
  */
 public AntAbdul implements AntInterface
 {
+  private AntState STATE = AntState.INITIAL;
+  private Command[] commands;
   
   public AntAbdul(File brain) {
+    
+  }
+  /**
+   * converts the input file of the brain into an array of commands.
+   * @param brain file from constructor
+   * @return array of commands
+   */
+  private Command[] parseBrain(File brain) {
     
   }
   
@@ -64,4 +74,7 @@ interface AntInterface {
   public void flip();
   public void setState();
   public void setResting();
+}
+enum AntStates {
+  INITIAL, SEARCHING, RETURNING, HUNTING, DEAD
 }
