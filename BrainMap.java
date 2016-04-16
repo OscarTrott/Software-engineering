@@ -1,6 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * WARNING:: THIS IS OBSOLETE; YOU MAY TAKE INSPIRATIION FROM HERE IF YOU WISH, BUT I WON'T BE USING THIS FOR THE PROJECT!
  */
 package Neurology;
 
