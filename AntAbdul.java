@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -10,33 +11,65 @@ import java.util.logging.Logger;
  */
 public class AntAbdul implements AntInterface {
 
+    //TEST
+    /**
+     * test1
+     *
+     * @param string
+     */
+    public boolean isNumberTest(String string) {
+        return isNumber(string);
+    }
+
+    /**
+     * test2
+     *
+     * @param string
+     */
+    public String[] lexBrainTest(String string) {
+        return lexBrain(string);
+    }
+
+    public AntState parseBrainTest(String string) {
+        return parseBrain(string);
+    }
+    //TEST
+
     private AntState STATE = AntState.INITIAL; //all ants start at an INITIAL state
     private String[] commands; //list of commands as parsed from the text file.
 
     /**
-     * constructor for the ant, takes a brain and converts it into an array of texts or commands
+     * constructor for the ant, takes a brain and converts it into an array of
+     * texts or commands
+     *
      * @param brain.ant in the directory
-     */ 
+     */
     public AntAbdul(File brain) {
         String content = null;
         //BELOW: the input File is converted into one String, then is parsed into the field 'commands'
         try {
             content = new Scanner(brain).useDelimiter("//Z").next();
+            commands = lexBrain(content);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(AntAbdul.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex) {
+            commands[0] = "Error!";
+            Logger.getLogger(AntAbdul.class.getName()).log(Level.SEVERE, null, ex);
+            System.exit(0);
         }
-        commands = lexBrain(content);
     }
+
     /**
      * checks if a whole command String is a number or not
+     *
      * @param command parsed from the brain.ant
      * @return is it a number or something else?
      */
-    private boolean isNumber(String command) {
+    private boolean isNumber(String command) {//DONE
         char[] array = command.toCharArray();
-        
-        for(char element : array) {
-            if(!Character.isDigit(element)) {
+
+        for (char element : array) {
+            if (!Character.isDigit(element)) {
                 return false;
             }
         }
@@ -49,7 +82,7 @@ public class AntAbdul implements AntInterface {
      * @param brain file from constructor
      * @return array of String commands
      */
-    private String[] lexBrain(String brain) {
+    private String[] lexBrain(String brain) {//DONE
         String[] spliteratedBrain = brain.split(" ");
         return spliteratedBrain;
     }
@@ -61,24 +94,32 @@ public class AntAbdul implements AntInterface {
      * @param String command as an element from the String[] array commands
      * @return next AntState value (FSM property)
      */
-    private AntState parseBrain(String command) {
+    private AntState parseBrain(String command) {//TODO
         AntState NEXT_STATE = null;
         if (command.equals("Move")) {
-            
+            move();
         } else if (command.equals("Turn")) {
-
+            turn();
         } else if (command.equals("Mark")) {
-
+            mark(0);
         } else if (command.equals("Unmark")) {
-
+            unMark();
         } else if (command.equals("Pickup")) {
-
+            pickUpFood();
         } else if (command.equals("Drop")) {
-
+            dropFood();
         } else if (command.equals("Flip")) {
-
+            flip();
         } else if (isNumber(command)) {
 
+        } else {
+            try {
+                throw new AntException("commands doesn't exist!");
+            } catch (AntException ex) {
+                Logger.getLogger(AntAbdul.class.getName()).log(Level.SEVERE, null, ex);
+                System.err.println("please check your ant brain file");
+                System.exit(0);
+            }
         }
 
         return NEXT_STATE;
@@ -148,9 +189,16 @@ interface AntInterface {
 }
 
 /**
- * @author Abdullah Rowaished
- * WARNING: this could be revised; need to look at requirements document!
+ * @author Abdullah Rowaished WARNING: this could be revised; need to look at
+ * requirements document!
  */
 enum AntState {
     INITIAL, SEARCHING, RETURNING/* RETURNING might go against the will of the user e.g. user might want the ant to collect as few particles of food as possibe; as part of a strategum, or vice-versa, this state could only fulfill one implementation */, HUNTING/* might be redundant since user cant explicitly command ants to hunt ants of the other team */, DEAD
+}
+
+class AntException extends Exception {
+
+    public AntException(String error) {
+        super(error);
+    }
 }
