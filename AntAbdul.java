@@ -11,8 +11,12 @@ import java.util.logging.Logger;
 public class AntAbdul implements AntInterface {
 
     private AntState STATE = AntState.INITIAL; //all ants start at an INITIAL state
-    private String[] commands;
+    private String[] commands; //list of commands as parsed from the text file.
 
+    /**
+     * constructor for the ant, takes a brain and converts it into an array of texts or commands
+     * @param brain.ant in the directory
+     */ 
     public AntAbdul(File brain) {
         String content = null;
         //BELOW: the input File is converted into one String, then is parsed into the field 'commands'
@@ -25,8 +29,8 @@ public class AntAbdul implements AntInterface {
     }
     /**
      * checks if a whole command String is a number or not
-     * @param command
-     * @return 
+     * @param command parsed from the brain.ant
+     * @return is it a number or something else?
      */
     private boolean isNumber(String command) {
         char[] array = command.toCharArray();
@@ -43,7 +47,7 @@ public class AntAbdul implements AntInterface {
      * converts the input file of the brain into an array of commands.
      *
      * @param brain file from constructor
-     * @return array of commands
+     * @return array of String commands
      */
     private String[] lexBrain(String brain) {
         String[] spliteratedBrain = brain.split(" ");
@@ -54,8 +58,8 @@ public class AntAbdul implements AntInterface {
      * takes a command from the converted file then, with the current state of
      * the ant, produces the next state; i.e. next state logic (NSL)
      *
-     * @param command
-     * @return
+     * @param String command as an element from the String[] array commands
+     * @return next AntState value (FSM property)
      */
     private AntState parseBrain(String command) {
         AntState NEXT_STATE = null;
@@ -120,7 +124,7 @@ public class AntAbdul implements AntInterface {
 
 /**
  *
- * @author Owner
+ * @author Oscar Trott
  */
 interface AntInterface {
 
@@ -143,6 +147,10 @@ interface AntInterface {
     public void setResting();
 }
 
+/**
+ * @author Abdullah Rowaished
+ * WARNING: this could be revised; need to look at requirements document!
+ */
 enum AntState {
-    INITIAL, SEARCHING, RETURNING, HUNTING, DEAD
+    INITIAL, SEARCHING, RETURNING/* RETURNING might go against the will of the user e.g. user might want the ant to collect as few particles of food as possibe; as part of a strategum, or vice-versa, this state could only fulfill one implementation */, HUNTING/* might be redundant since user cant explicitly command ants to hunt ants of the other team */, DEAD
 }
