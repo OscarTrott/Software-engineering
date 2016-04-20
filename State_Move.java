@@ -9,7 +9,7 @@ package antgame;
  *
  * @author Owner
  */
-public class State_Move extends AntBrain_State{
+public class State_Move extends State_Super{
     int st2;
     public State_Move(String instruction_, int st1_, int st2_) {
         super(instruction_, st1_);

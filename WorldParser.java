@@ -55,7 +55,7 @@ public class WorldParser {
                         parsedWorld[cX][y] = new Cell(false, AntHill.RED_ANTHILL);
                     case '-':
                         parsedWorld[cX][y] = new Cell(false, AntHill.BLACK_ANTHILL);
-                    case ',':
+                    case '.':
                         parsedWorld[cX][y] = new Cell(false, AntHill.NO_ANTHILL);
                     case '#':
                         parsedWorld[cX][y] = new Cell(true, AntHill.NO_ANTHILL);

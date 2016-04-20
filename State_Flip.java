@@ -9,7 +9,7 @@ package antgame;
  *
  * @author Owner
  */
-public class State_Flip extends AntBrain_State{
+public class State_Flip extends State_Super{
     int st2;
     int p;
     public State_Flip(String instruction_, int st1_, int st2_, int p_) {

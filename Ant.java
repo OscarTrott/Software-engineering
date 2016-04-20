@@ -20,8 +20,9 @@ public class Ant implements AntInterface {
     int locationY;
     final boolean isRed;
     boolean alive;
+    World world;
 
-    public Ant(int id_, int x, int y, boolean isRed_) {
+    public Ant(int id_, int x, int y, boolean isRed_, World world_) {
         alive = true;
         isRed = isRed_;
         locationX = x;
@@ -29,6 +30,7 @@ public class Ant implements AntInterface {
         id = id_;
         currentState = 0;
         direction = 0;
+        world = world_;
     }
 
     public boolean isResting()
@@ -60,9 +62,14 @@ public class Ant implements AntInterface {
         return locationY;
     }
 
+    public void kill()
+    {
+        alive = false;
+    }
+    
     @Override
     public void move() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
@@ -72,7 +79,7 @@ public class Ant implements AntInterface {
 
     @Override
     public void mark(int markNum) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
     }
 
     @Override
@@ -82,7 +89,7 @@ public class Ant implements AntInterface {
 
     @Override
     public void pickUpFood() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        hasFood = true;
     }
 
     public int getDirection() {

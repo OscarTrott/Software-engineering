@@ -6,7 +6,7 @@ package antgame;
  * @author Owner
  */
 public interface VisualisationInterface {
-  public void updateCell();
+  public void updateWorld(Cell[][] world);
   public void getWorld();
     
 }

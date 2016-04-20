@@ -9,7 +9,7 @@ package antgame;
  *
  * @author Owner
  */
-public class State_Drop extends AntBrain_State{
+public class State_Drop extends State_Super{
     
     public State_Drop(String instruction_, int st1_) {
         super(instruction_, st1_);

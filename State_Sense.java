@@ -9,7 +9,7 @@ package antgame;
  *
  * @author Owner
  */
-public class State_Sense extends AntBrain_State{
+public class State_Sense extends State_Super{
     String senseDir;
     int st2;
     String cond;

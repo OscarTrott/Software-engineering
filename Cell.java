@@ -73,16 +73,6 @@ public class Cell implements Cell_Interface {
     }
 
     @Override
-    public void getType() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void createCell() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public boolean hasMark(boolean isRed, int mark) {
         if (isRed) return redMarks[mark];
         else return blackMarks[mark];

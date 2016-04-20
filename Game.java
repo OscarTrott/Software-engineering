@@ -5,6 +5,13 @@
  */
 package antgame;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -15,12 +22,15 @@ import javax.swing.JOptionPane;
 public class Game implements GameInterface{
 
     Ant[] ants;
-    Visualiser gui;
+    VisualisationInterface gui;
     int currentRound;
     World world;
-    int seed;
-    AntBrain_State[] redBrain;
-    AntBrain_State[] blackBrain;
+    int s;
+    State_Super[] redBrain;
+    State_Super[] blackBrain;
+    ArrayList<Player> players;
+    int numOfPlayers;
+    Stats stats;
     
     /**
      * Start a new game with default parameters for a contest world
@@ -28,10 +38,11 @@ public class Game implements GameInterface{
     public Game()
     {
         ants = new Ant[0];
-        gui = new Visualiser(150, 150);
-        seed = 42;
-        world = new World(this);
+        s = 12345;
+        world = new World(this, "World1");
         world.setDimensions(150, 150);
+        for (int i = 0; i < 4; i++) genS();
+        stats = new Stats();
     }
     
     /**
@@ -42,21 +53,63 @@ public class Game implements GameInterface{
     public Game(int x, int y)
     {
         ants = new Ant[0];
-        gui = new Visualiser(x, y);
-        seed = 42;
-        world = new World(this);
+        world = new World(this, "World1");
         world.setDimensions(x, y);
+        
+        //Initial seed
+        s = 12345;
+        for (int i = 0; i < 4; i++) genS();
+        stats = new Stats();
     }
     
-    @Override
-    public void startGame() throws Exception
+    public void addPlayer(String name, File f)
     {
+        AntBrain_Parser p = new AntBrain_Parser(f);
+        players.add(new Player(name, p.getBrain1().toArray(new State_Super[p.getBrain1().size()])));
+    }
+    
+    public void setPlayerNum(int num)
+    {
+        numOfPlayers = num;
+    }
+    
+    public int getPlayerNum()
+    {
+        return numOfPlayers;
+    }
+    
+    /**
+     * Starts the game which is currently set up
+     * @param p1 player one being used in this game
+     * @param p2 player two being user in this game
+     * @throws Exception Throws an exception when an illegal operation occurs, an ant moves into a cell occupied by a rock
+     */
+    @Override
+    public void startGame(Player p1, Player p2) throws Exception
+    {
+        redBrain = p1.getBrain();
+        blackBrain = p2.getBrain();
         currentRound = 0;
-        
         while (++currentRound!=300000) step(); //Step for each round
-        JOptionPane.showMessageDialog(new JFrame(), "Results");
+        if (stats.getRedFood()==stats.getBlackFood()) 
+        {
+            p1.draw();
+            p2.draw();
+        }
+        else if (stats.getRedFood()>stats.getBlackFood())
+        {
+            p1.win();
+        }
+        else
+        {
+            p2.win();
+        }
     }
 
+    /**
+     * Add an ant to the world, used in initial world setup
+     * @param a the ant to be added
+     */
     public void addAnt(Ant a)
     {
         Ant[] t = new Ant[ants.length+1];
@@ -65,6 +118,10 @@ public class Game implements GameInterface{
         ants = t;
     }
     
+    /**
+     * Steps through a single execution cycle for all ants
+     * @throws Exception throws an exception when an illegal operation occurs
+     */
     private void step() throws Exception
     {
         for (int i = 0; i < ants.length; i++)
@@ -78,14 +135,38 @@ public class Game implements GameInterface{
         }
     }
     
-    private void stepAnt(Ant a, AntBrain_State[] brain) throws Exception
+    /**
+     * Makes the ant a run a single execution cycle
+     * @param a the ant to be stepped
+     * @param brain the brain of that ants colour
+     * @throws Exception throws an exception when an illegal operation occurs
+     */
+    private void stepAnt(Ant a, State_Super[] brain) throws Exception
     {
-        AntBrain_State instruction = brain[a.getState()];
+        int killCount = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            int[] coord = world.getFacedCell(a);
+            if (world.getCell(coord[0],coord[1]).isRocky()||(world.getCell(coord[0],coord[1]).getAnt()!=null&&world.getCell(coord[0],coord[1]).getAnt().isRed!=a.isRed())) killCount++;
+            a.turnLeft(true);
+        }
+        if (killCount>4) 
+        {
+            if (a.isRed()) stats.redKill();
+            else stats.blackKill();
+            a.kill();
+            for (int i = 0; i < 3; i++) world.getCell(a.getX(), a.getY()).increaseFood();
+            return;
+        }
         
+        State_Super instruction = brain[a.getState()];
+        
+        //Find which instruction is being executed and then run the apprpriate code
         if (instruction.getClass()==State_Flip.class)
         {
+            //Got to a state depending on the probability
             State_Flip flip = (State_Flip)instruction;
-            a.setState(Math.random()*flip.get_P()==0?flip.get_St1():flip.get_St2());
+            a.setState(pseudoRandom(flip.p)==0?flip.get_St1():flip.get_St2());
         }
         else if (instruction.getClass()==State_Drop.class)
         {
@@ -104,6 +185,7 @@ public class Game implements GameInterface{
             int x = coord[0];
             int y = coord[1];
             
+            //If the cell in front of the ant can be moved into then move the ant nito it
             if (!(world.getCell(x, y).isRocky()||world.getCell(x, y).getAnt()!=null))
             {
                 world.getCell(a.getX(), a.getY()).setAnt(null);
@@ -112,6 +194,7 @@ public class Game implements GameInterface{
                 world.getCell(a.getX(), a.getY()).setAnt(a);
                 a.setResting(14); //Makes the ant rest for 14 steps
             }
+            a.setState(instruction.get_St1());
         }
         else if (instruction.getClass()==State_PickUp.class)
         {
@@ -121,7 +204,7 @@ public class Game implements GameInterface{
                 world.getCell(a.getX(), a.getY()).reduceFood();
                 a.pickUpFood();
             }
-            a.setState(instruction.get_St1());
+            a.setState(pickup.get_St1());
         }
         else if (instruction.getClass()==State_Sense.class)
         {
@@ -220,26 +303,115 @@ public class Game implements GameInterface{
         world.getCell(a.getX(), a.getY()).markCell(markNum, a.isRed());
     }
     
+    /**
+     * Force an ant to drop its food onto the cell it is currently on
+     * @param a the ant whose food should be dropped
+     */
     private void dropFood(Ant a)
     {
+        if (a.isRed()&&world.getCell(a.getX(), a.getY()).hasAnthill(a.isRed)) stats.redFood();
+        else if (!a.isRed()&&world.getCell(a.getX(), a.getY()).hasAnthill(a.isRed)) stats.blackFood();
         a.dropFood();
         world.getCell(a.getX(), a.getY()).increaseFood();
     }
     
     @Override
-    public void loadWorld() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void loadWorld(File w) {
+        WorldParser wp = new WorldParser();
+        try {
+            wp.loadWorld(w);
+        } catch (Exception ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        world.setWorld(wp.getWorld());
+        world.setName(w.getName());
     }
 
     @Override
-    public void determineWinner() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Player determineWinner() {
+        Player winner = players.get(0);
+        for (Player p : players)
+        {
+            if (p.currentScore()>winner.currentScore()) winner = p;
+        }
+        return winner;
     }
     
     @Override
     public void setSeed(int seed_)
     {
-        seed = seed_;
+        s = seed_;
     }
     
+    public void genS()
+    {
+        s = s*22695477+1;
+    }
+    
+    public int pseudoRandom(int n)
+    {
+        return ((s/65536)%16384)%n;
+    }
+    
+    public void randomiseWorld()
+    {
+        world.randomWorld();
+    }
+    
+    public void writePlayerMatchup()
+    {
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter("PlayerMatchups.txt"));
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        for (int i = 0; i < players.size(); i++)
+        {
+            for (int j = 0; j < players.size(); j++)
+            {
+                if (i!=j) try {
+                    bw.write(players.get(i).getName()+ " vs "+players.get(j).getName() + " on world " + world.getName());
+                    bw.newLine();
+                } catch (IOException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        try {
+            bw.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void startTournament()
+    {
+        for (int p1 = 0; p1 < players.size(); p1++)
+        {
+            for (int p2 = 0; p2 < players.size(); p2++)
+            {
+                if (p1 != p2)
+                {
+                    try {
+                        startGame(players.get(p1),players.get(p2));
+                    } catch (Exception ex) {
+                        Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    gui.updateWorld(world.layout);
+                }
+            }
+        }
+    }
+    
+    public Stats getStats()
+    {
+        return stats;
+    }
+    
+    public ArrayList<Player> getPlayers()
+    {
+        return players;
+    }
 }

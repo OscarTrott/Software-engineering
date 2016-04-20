@@ -9,7 +9,7 @@ package antgame;
  *
  * @author Owner
  */
-public class State_Turn extends AntBrain_State{
+public class State_Turn extends State_Super{
     boolean turnLeft;
     public State_Turn(String instruction_, int st1_, boolean turnLeft_) {
         super(instruction_, st1_);
