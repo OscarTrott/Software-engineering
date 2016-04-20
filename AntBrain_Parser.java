@@ -13,12 +13,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
+import javafx.scene.AccessibleAction;
 /**
  *
  * @author Owner
  */
 public class AntBrain_Parser {
+    javafx.scene.AccessibleAction a = null;
     File b1;
     File b2;
     int length;
@@ -145,14 +146,14 @@ public class AntBrain_Parser {
                     {
                         if (splitLine[4].matches("Friend|Foe|FriendWithFood|FoeWithFood|Food|Rock|FoeMarker|Home|FoeHome") && splitLine.length == 5)
                         {
-                            if (isBrain1) brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4], Integer.parseInt(splitLine[3])));
-                            else brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4], Integer.parseInt(splitLine[3])));
+                            if (isBrain1) brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4], Integer.parseInt(splitLine[3]),0));
+                            else brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4], Integer.parseInt(splitLine[3]),0));
                             wellFormed = true;
                         }
                         else if (splitLine[4].matches("Marker") && splitLine.length == 6 && Integer.parseInt(splitLine[5]) >= 0 && Integer.parseInt(splitLine[5]) <= 5)
                         {
-                            if (isBrain1) brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4] + " " + splitLine[5], Integer.parseInt(splitLine[3])));
-                            else brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4] + " " + splitLine[5], Integer.parseInt(splitLine[3])));
+                            if (isBrain1) brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4], Integer.parseInt(splitLine[3]), Integer.parseInt(splitLine[5])));
+                            else brain1.add(new State_Sense(splitLine[0], Integer.parseInt(splitLine[2]), splitLine[1], splitLine[4], Integer.parseInt(splitLine[3]), Integer.parseInt(splitLine[5])));
                             wellFormed = true;
                         }
                     }
@@ -214,13 +215,6 @@ public class AntBrain_Parser {
             }
         }
         return wellFormed;
-    }
-    
-    private AntBrain_State createState(String s)
-    {
-        AntBrain_State a = null;
-        
-        return a;
     }
     
     public ArrayList<AntBrain_State> getBrain1()
