@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="500.0" prefWidth="440.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="antgame.Controller">
+    <stylesheets>
+        <URL value="@fxml.css" />
+    </stylesheets>
+   <children>
+      <TextField layoutX="225.0" layoutY="235.0" prefHeight="31.0" prefWidth="201.0" />
+      <Label layoutX="35.0" layoutY="214.0" prefHeight="73.0" prefWidth="174.0" text="Number of Players" textAlignment="CENTER" textFill="#329a43" wrapText="true">
+         <font>
+            <Font name="Vivaldi Italic" size="24.0" />
+         </font>
+      </Label>
+      <Button fx:id="homeButton" layoutX="179.0" layoutY="14.0" mnemonicParsing="false" onAction="#goHome" text="Home" />
+      <Button layoutX="170.0" layoutY="455.0" mnemonicParsing="false" text="Import World" />
+      <Button layoutX="14.0" layoutY="455.0" mnemonicParsing="false" text="Show Pairings" />
+      <Button layoutX="326.0" layoutY="455.0" mnemonicParsing="false" text="Start Game" />
+      <Button layoutX="281.0" layoutY="281.0" mnemonicParsing="false" text="Load Brain(s)" />
+   </children>
+</AnchorPane>
