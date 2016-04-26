@@ -5,10 +5,14 @@
  */
 package antgame;
 
+import java.awt.AWTException;
+import java.awt.Robot;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +30,7 @@ public class Game implements GameInterface{
     int currentRound;
     World world;
     int s;
+    int x;
     State_Super[] redBrain;
     State_Super[] blackBrain;
     ArrayList<Player> players;
@@ -43,6 +48,7 @@ public class Game implements GameInterface{
         world.setDimensions(150, 150);
         for (int i = 0; i < 4; i++) genS();
         stats = new Stats();
+        players = new ArrayList();
     }
     
     /**
@@ -90,7 +96,26 @@ public class Game implements GameInterface{
         redBrain = p1.getBrain();
         blackBrain = p2.getBrain();
         currentRound = 0;
-        while (++currentRound!=300000) step(); //Step for each round
+        world.placeAnts();
+        
+        while (++currentRound!=300000){
+            step(); //Step for each round
+            if (currentRound%14==0) 
+            {
+                world.printWorld();
+                Thread.sleep(500);
+                try {
+                    Robot pressbot = new Robot();
+                    pressbot.keyPress(17); // Holds CTRL key.
+                    pressbot.keyPress(76); // Holds L key.
+                    pressbot.keyRelease(17); // Releases CTRL key.
+                    pressbot.keyRelease(76); // Releases L key.
+                } catch (AWTException ex) {
+                }
+                //new BufferedReader(new InputStreamReader(System.in)).readLine();
+            }
+            
+        }
         if (stats.getRedFood()==stats.getBlackFood()) 
         {
             p1.draw();
@@ -118,6 +143,36 @@ public class Game implements GameInterface{
         ants = t;
     }
     
+    public void placeAnts()
+    {
+        for (int i =0; i < world.sizeX; i++)
+        {
+            for (int j = 0; j < world.sizeY; j++)
+            {
+                if (world.getCell(i, j).hasAnthill(true))
+                {
+                    Ant ant = new Ant(Ant.nextId++, i, j, true, world);
+                    try {
+                        world.getCell(i, j).setAnt(ant);
+                        addAnt(ant);
+                    } catch (Exception ex) {
+                        //Will never occur in this instance
+                    }
+                }
+                else if (world.getCell(i, j).hasAnthill(false))
+                {
+                    Ant ant = new Ant(Ant.nextId++, i, j, false, world);
+                    try {
+                        world.getCell(i, j).setAnt(ant);
+                        addAnt(ant);
+                    } catch (Exception ex) {
+                        //Will never occur in this instance
+                    }
+                }
+            }
+        }
+    }
+    
     /**
      * Steps through a single execution cycle for all ants
      * @throws Exception throws an exception when an illegal operation occurs
@@ -143,6 +198,7 @@ public class Game implements GameInterface{
      */
     private void stepAnt(Ant a, State_Super[] brain) throws Exception
     {
+        
         int killCount = 0;
         for (int i = 0; i < 6; i++)
         {
@@ -160,6 +216,9 @@ public class Game implements GameInterface{
         }
         
         State_Super instruction = brain[a.getState()];
+        
+        //if (a.id==1)
+        //    System.out.println();
         
         //Find which instruction is being executed and then run the apprpriate code
         if (instruction.getClass()==State_Flip.class)
@@ -234,22 +293,22 @@ public class Game implements GameInterface{
             
             if (sense.cond.equals("Friend"))
             {
-                if (sensedCell.getAnt().isRed()==a.isRed())a.setState(sense.get_St1());
+                if (sensedCell.getAnt()!=null&&sensedCell.getAnt().isRed()==a.isRed())a.setState(sense.get_St1());
                 else a.setState(sense.get_St2());
             }
             else if (sense.cond.equals("Foe"))
             {
-                if (sensedCell.getAnt().isRed()!=a.isRed())a.setState(sense.get_St1());
+                if (sensedCell.getAnt()!=null&&sensedCell.getAnt().isRed()!=a.isRed())a.setState(sense.get_St1());
                 else a.setState(sense.get_St2());
             }
             else if (sense.cond.equals("FriendWithFood"))
             {
-                if (sensedCell.getAnt().isRed()==a.isRed()&&sensedCell.getAnt().hasFood()) a.setState(sense.get_St1());
+                if (sensedCell.getAnt()!=null&&sensedCell.getAnt().isRed()==a.isRed()&&sensedCell.getAnt().hasFood()) a.setState(sense.get_St1());
                 else a.setState(sense.get_St2());
             }
             else if (sense.cond.equals("FoeWithFood"))
             {
-                if (sensedCell.getAnt().isRed()!=a.isRed()&&sensedCell.getAnt().hasFood()) a.setState(sense.get_St1());
+                if (sensedCell.getAnt()!=null&&sensedCell.getAnt().isRed()!=a.isRed()&&sensedCell.getAnt().hasFood()) a.setState(sense.get_St1());
                 else a.setState(sense.get_St2());
             }
             else if (sense.cond.equals("Food"))
@@ -350,12 +409,15 @@ public class Game implements GameInterface{
     
     public int pseudoRandom(int n)
     {
-        return ((s/65536)%16384)%n;
+        int returned = ((s/65536)%16384)%n;
+        genS();
+        return returned;
     }
     
     public void randomiseWorld()
     {
         world.randomWorld();
+        //placeAnts();
     }
     
     public void writePlayerMatchup()
@@ -386,20 +448,17 @@ public class Game implements GameInterface{
         }
     }
     
-    public void startTournament()
+    public void startTournament() throws Exception
     {
         for (int p1 = 0; p1 < players.size(); p1++)
         {
-            for (int p2 = 0; p2 < players.size(); p2++)
+            for (int p2 = p1; p2 < players.size(); p2++)
             {
                 if (p1 != p2)
                 {
-                    try {
-                        startGame(players.get(p1),players.get(p2));
-                    } catch (Exception ex) {
-                        Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    gui.updateWorld(world.layout);
+                    startGame(players.get(p1),players.get(p2));
+
+                    //TODO: Add code to update gui display, e.g. gui.updateWorld(world.layout);
                 }
             }
         }

@@ -21,6 +21,7 @@ public class Ant implements AntInterface {
     final boolean isRed;
     boolean alive;
     World world;
+    static int nextId = 0;
 
     public Ant(int id_, int x, int y, boolean isRed_, World world_) {
         alive = true;

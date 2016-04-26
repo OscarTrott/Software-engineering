@@ -38,6 +38,10 @@ public class World implements WorldInterface{
         for (int i = 0; i < sizeX; i++)
         {
             layout[i] = new Cell[sizeY];
+            for (int j = 0; j < layout[0].length; j++)
+            {
+                layout[i][j] = new Cell(false, AntHill.NO_ANTHILL);
+            }
         }
     }
 
@@ -46,14 +50,16 @@ public class World implements WorldInterface{
      */
     public void randomWorld()
     {
+        createWorld();
         worldName = "world"+worldNum++;
+        
         //Place a ring of rocks around the world
         for (int x = 0; x < sizeX; x++)
         {
             addRock(x, 0, false);
             addRock(x, sizeY-1, false);
         }
-        for (int y = 1; y < sizeY-2; y++)
+        for (int y = 1; y < sizeY-1; y++)
         {
             addRock(0, y, false);
             addRock(sizeX-1, y, false);
@@ -104,7 +110,7 @@ public class World implements WorldInterface{
             int maxWidth = height<8?7+height:20-height;
             for (int width = -1; width < maxWidth+1; width++)
             {
-                if (getCell(x+width+offset,y+height).isRocky()) //Need not check for anthills or food as they do not yet exist
+                if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()) //Need not check for anthills or food as they do not yet exist
                 {
                     placed = false;
                 }
@@ -162,7 +168,7 @@ public class World implements WorldInterface{
             int maxWidth = height<8?7+height:20-height;
             for (int width = -1; width < maxWidth+1; width++)
             {
-                if (getCell(x+width+offset,y+height).isRocky()||getCell(x+width-height,y+height).hasAnthill(true))
+                if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()||getCell(x+width+offset,y+height).hasAnthill(true))
                 {
                     placed = false;
                 }
@@ -196,7 +202,6 @@ public class World implements WorldInterface{
         boolean placed = false;
         while (!placed)
         {
-            placed = true;
             double temp = Math.random()*(sizeX-7);
             int x = Math.round(Math.round(temp));
             temp = Math.random()*sizeY;
@@ -220,9 +225,11 @@ public class World implements WorldInterface{
         {
             for (int width = -1; width < 6; width++)
             {
-                if (getCell(x+width+offset,y+height).isRocky()||getCell(x+width-offset,y+height).hasAnthill(true)||getCell(x+width-offset,y+height).hasAnthill(false))
+                
+                if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()||getCell(x+width+offset,y+height).hasAnthill(true)||getCell(x+width+offset,y+height).hasAnthill(false))
                 {
                     placed = false;
+                    break;
                 }
                 offset = (height+y)%2!=0?offset-1:offset;
             }
@@ -235,11 +242,11 @@ public class World implements WorldInterface{
 
                 for (int width = 0; width < 5; width++)
                 {
-                    if (getCell(x+width+offset,y+height).isRocky()||getCell(x+width-offset,y+height).hasAnthill(true)||getCell(x+width-offset,y+height).hasAnthill(false))
+                    if (!getCell(x+width+offset,y+height).isRocky()||!getCell(x+width+offset,y+height).hasAnthill(true)||getCell(x+width+offset,y+height).hasAnthill(false))
                     {
                         layout[x+width-height][y+height].setFood(5);
                     }
-                    offset = (height+y)%2!=0?offset-1:offset;
+                    offset--;// = (height+y)%2==0?offset-1:offset;
 
                 }
             }
@@ -259,7 +266,7 @@ public class World implements WorldInterface{
             int x = Math.round(Math.round(temp));
             temp = Math.random()*sizeY;
             int y = Math.round(Math.round(temp));
-            addRock(x,y, true);
+            placed = addRock(x,y, true);
         }
     }
     
@@ -280,14 +287,15 @@ public class World implements WorldInterface{
                 int maxWidth = height!=0?2:3;
                 for (int width = -1; width < maxWidth; width++)
                 {
-                    if (getCell(x+width+offset,y+height).isRocky()||getCell(x+width-offset,y+height).hasAnthill(true)||getCell(x+width-offset,y+height).hasAnthill(false))
+                    if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()||getCell(x+width+offset,y+height).hasAnthill(true)||getCell(x+width+offset,y+height).hasAnthill(false))
                     {
                         placed = false;
+                        break;
                     }
                     offset = (height+y)%2!=0?offset-1:offset;
                 }
             }
-        if (!(getCell(x,y).isRocky()||getCell(x,y).hasAnthill(true)||getCell(x,y).hasAnthill(false)))
+        if (placed&&!(getCell(x,y).isRocky()||getCell(x,y).hasAnthill(true)||getCell(x,y).hasAnthill(false)))
         {
             layout[x][y] = new Cell(true, AntHill.NO_ANTHILL);
             placed = true;
@@ -358,18 +366,21 @@ public class World implements WorldInterface{
         {
             case 0:
                 nextX++;
+                break;
             case 1:
-                if (x%2!=0)
+                if (x%2==0)
                 {
                     nextY++;
+                    
                 }
                 else
                 {
                     nextY++;
                     nextX++;
                 }
+                break;
             case 2:
-                if (x%2!=0)
+                if (x%2==0)
                 {
                     nextY++;
                     nextX--;
@@ -378,10 +389,11 @@ public class World implements WorldInterface{
                 {
                     nextY++;
                 }
+                break;
             case 3:
                 nextX--;
             case 4:
-                if (x%2!=0)
+                if (x%2==0)
                 {
                     nextX--;
                     nextY--;
@@ -390,8 +402,9 @@ public class World implements WorldInterface{
                 {
                     nextY--;
                 }
+                break;
             case 5:
-                if (x%2!=0)
+                if (x%2==0)
                 {
                     nextY--;
                 }
@@ -400,6 +413,7 @@ public class World implements WorldInterface{
                     nextY--;
                     nextX++;
                 }
+                break;
         }
         
         int[] result = new int[2];
@@ -428,5 +442,24 @@ public class World implements WorldInterface{
     public String getName()
     {
         return worldName;
+    }
+    
+    public void printWorld()
+    {
+        for (int y = 0; y < sizeX; y++)
+        {
+            if (y%2!=0) System.out.print(" ");
+            for (int x = 0; x < sizeY; x++)
+            {
+                if (layout[x][y].isRocky()) System.out.print("#");
+                else if (layout[x][y].getAnt()!=null&&layout[x][y].getAnt().isRed()) System.out.print("[");
+                else if (layout[x][y].getAnt()!=null&&!layout[x][y].getAnt().isRed()) System.out.print("]");
+                else if (layout[x][y].hasAnthill(true)) System.out.print("+");
+                else if (layout[x][y].hasAnthill(false)) System.out.print("-");
+                else if (layout[x][y].foodRemaining()>0) System.out.print(layout[x][y].foodRemaining());
+                else System.out.print(".");
+            }
+            System.out.println();
+        }
     }
 }

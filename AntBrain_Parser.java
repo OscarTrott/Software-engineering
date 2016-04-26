@@ -101,7 +101,7 @@ public class AntBrain_Parser {
         {
             if (Integer.parseInt(splitLine[1]) >= 0 && Integer.parseInt(splitLine[2]) >= 0 && Integer.parseInt(splitLine[3])>= 0)
             {
-                brain.add(new State_Flip(splitLine[0],Integer.parseInt(splitLine[3]),Integer.parseInt(splitLine[1]),Integer.parseInt(splitLine[2])));
+                brain.add(new State_Flip(splitLine[0], Integer.parseInt(splitLine[3]),Integer.parseInt(splitLine[2]),Integer.parseInt(splitLine[1])));
                 wellFormed = true;
             }
         }
