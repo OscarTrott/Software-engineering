@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package antgame;
+ 
 
 /**
  *
  * @author oscar
  */
-public class World implements WorldInterface{
+public class World {
 
     Cell[][] layout;
     State_Super[] redBrain;
@@ -31,7 +31,6 @@ public class World implements WorldInterface{
         worldName = worldName_;
     }
     
-    @Override
     public void createWorld() {
         //Sets up the layout array
         layout = new Cell[sizeX][];
@@ -107,7 +106,7 @@ public class World implements WorldInterface{
 
         for (int height = -1; height < 14; height++)
         {
-            int maxWidth = height<8?7+height:20-height;
+            int maxWidth = height<7?7+height:19-height;
             for (int width = -1; width < maxWidth+1; width++)
             {
                 if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()) //Need not check for anthills or food as they do not yet exist
@@ -115,7 +114,7 @@ public class World implements WorldInterface{
                     placed = false;
                 }
             }
-            if (height<8)
+            if (height<6)
                 offset = (height+y)%2!=0?offset-1:offset;
             else
                 offset = (height+y)%2!=0?offset+1:offset;
@@ -123,13 +122,13 @@ public class World implements WorldInterface{
         if (placed)
             for (int height = 0; height < 13; height++)
             {
-                int maxWidth = height<8?7+height:20-height;
+                int maxWidth = height<7?7+height:19-height;
                 for (int width = 0; width < maxWidth; width++)
                 {
                     layout[x+width+offset][y+height] = new Cell(false, AntHill.RED_ANTHILL);
                 }
-                if (height<8)
-                    offset = (height+y)%2!=0?offset-1:offset;
+                if (height<6)
+                    offset = (height+y)%2==0?offset-1:offset;
                 else
                     offset = (height+y)%2!=0?offset+1:offset;
             }
@@ -165,7 +164,7 @@ public class World implements WorldInterface{
         boolean placed = true;
         for (int height = -1; height < 14; height++)
         {
-            int maxWidth = height<8?7+height:20-height;
+            int maxWidth = height<7?7+height:19-height;
             for (int width = -1; width < maxWidth+1; width++)
             {
                 if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()||getCell(x+width+offset,y+height).hasAnthill(true))
@@ -173,7 +172,7 @@ public class World implements WorldInterface{
                     placed = false;
                 }
             }
-            if (height<8)
+            if (height<6)
                 offset = (height+y)%2!=0?offset-1:offset;
             else
                 offset = (height+y)%2!=0?offset+1:offset;
@@ -181,13 +180,13 @@ public class World implements WorldInterface{
         if (placed)
             for (int height = 0; height < 13; height++)
             {
-                int maxWidth = height<8?7+height:20-height;
+                int maxWidth = height<7?7+height:19-height;
                 for (int width = 0; width < maxWidth; width++)
                 {
                     layout[x+width+offset][y+height] = new Cell(false, AntHill.BLACK_ANTHILL);
                 }
-                if (height<8)
-                    offset = (height+y)%2!=0?offset-1:offset;
+                if (height<6)
+                    offset = (height+y)%2==0?offset-1:offset;
                 else
                     offset = (height+y)%2!=0?offset+1:offset;
             }
@@ -228,11 +227,11 @@ public class World implements WorldInterface{
                 
                 if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||getCell(x+width+offset,y+height).isRocky()||getCell(x+width+offset,y+height).hasAnthill(true)||getCell(x+width+offset,y+height).hasAnthill(false))
                 {
-                    placed = false;
-                    break;
+                    return false;
                 }
-                offset = (height+y)%2!=0?offset-1:offset;
+                
             }
+            offset = (height+y)%2==0?offset-1:offset;
         }
         offset = 0;
         if (placed)
@@ -244,11 +243,11 @@ public class World implements WorldInterface{
                 {
                     if (!getCell(x+width+offset,y+height).isRocky()||!getCell(x+width+offset,y+height).hasAnthill(true)||getCell(x+width+offset,y+height).hasAnthill(false))
                     {
-                        layout[x+width-height][y+height].setFood(5);
+                        layout[x+width+offset][y+height].setFood(5);
                     }
-                    offset--;// = (height+y)%2==0?offset-1:offset;
 
                 }
+                offset = (height+y)%2==0?offset-1:offset;
             }
         }
         return placed;
@@ -308,7 +307,6 @@ public class World implements WorldInterface{
      * @param x the width of the world
      * @param y the height of the world
      */
-    @Override
     public void setDimensions(int x, int y) {
         sizeX = x;
         sizeY = y;
@@ -317,7 +315,6 @@ public class World implements WorldInterface{
     /**
      * Place an ant on every anthill cell with its colour being that of the anthill, increments the id with each ant placed
      */
-    @Override
     public void placeAnts() 
     {
         int id = 0;
@@ -429,8 +426,7 @@ public class World implements WorldInterface{
      * @param y the y value
      * @return the cell at x, y
      */
-    @Override
-    public Cell_Interface getCell(int x, int y) {
+    public Cell getCell(int x, int y) {
         return layout[x][y];
     }
     
@@ -444,6 +440,9 @@ public class World implements WorldInterface{
         return worldName;
     }
     
+    /**
+     * Should only be used for debugging purposes, prints out an unformatted world to the default output stream
+     */
     public void printWorld()
     {
         for (int y = 0; y < sizeX; y++)
@@ -458,6 +457,7 @@ public class World implements WorldInterface{
                 else if (layout[x][y].hasAnthill(false)) System.out.print("-");
                 else if (layout[x][y].foodRemaining()>0) System.out.print(layout[x][y].foodRemaining());
                 else System.out.print(".");
+                System.out.print(" ");
             }
             System.out.println();
         }

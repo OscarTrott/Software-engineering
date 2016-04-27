@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package antgame;
+ 
 
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -18,18 +18,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import java.math.BigInteger;
 
 /**
  *
  * @author oscar
  */
-public class Game implements GameInterface{
+public class Game{
 
     Ant[] ants;
-    VisualisationInterface gui;
     int currentRound;
     World world;
-    int s;
+    BigInteger s;
     int x;
     State_Super[] redBrain;
     State_Super[] blackBrain;
@@ -43,7 +43,7 @@ public class Game implements GameInterface{
     public Game()
     {
         ants = new Ant[0];
-        s = 12345;
+        s = new BigInteger("12345");
         world = new World(this, "World1");
         world.setDimensions(150, 150);
         for (int i = 0; i < 4; i++) genS();
@@ -63,7 +63,7 @@ public class Game implements GameInterface{
         world.setDimensions(x, y);
         
         //Initial seed
-        s = 12345;
+        s = new BigInteger("12345");
         for (int i = 0; i < 4; i++) genS();
         stats = new Stats();
     }
@@ -90,7 +90,6 @@ public class Game implements GameInterface{
      * @param p2 player two being user in this game
      * @throws Exception Throws an exception when an illegal operation occurs, an ant moves into a cell occupied by a rock
      */
-    @Override
     public void startGame(Player p1, Player p2) throws Exception
     {
         redBrain = p1.getBrain();
@@ -99,20 +98,17 @@ public class Game implements GameInterface{
         world.placeAnts();
         
         while (++currentRound!=300000){
-            step(); //Step for each round
-            if (currentRound%14==0) 
+            //step(); //Step for each round
+            /*double now = System.currentTimeMillis();
+            double last = 0;*/
+            if (currentRound%100==0) 
             {
+                //now = System.currentTimeMillis();
+                //System.out.println("Round: "+currentRound+", time to execute: "+(now));
                 world.printWorld();
                 Thread.sleep(500);
-                try {
-                    Robot pressbot = new Robot();
-                    pressbot.keyPress(17); // Holds CTRL key.
-                    pressbot.keyPress(76); // Holds L key.
-                    pressbot.keyRelease(17); // Releases CTRL key.
-                    pressbot.keyRelease(76); // Releases L key.
-                } catch (AWTException ex) {
-                }
-                //new BufferedReader(new InputStreamReader(System.in)).readLine();
+                //last = now;
+                new BufferedReader(new InputStreamReader(System.in)).readLine();
             }
             
         }
@@ -216,10 +212,7 @@ public class Game implements GameInterface{
         }
         
         State_Super instruction = brain[a.getState()];
-        
-        //if (a.id==1)
-        //    System.out.println();
-        
+       
         //Find which instruction is being executed and then run the apprpriate code
         if (instruction.getClass()==State_Flip.class)
         {
@@ -374,7 +367,6 @@ public class Game implements GameInterface{
         world.getCell(a.getX(), a.getY()).increaseFood();
     }
     
-    @Override
     public void loadWorld(File w) {
         WorldParser wp = new WorldParser();
         try {
@@ -383,10 +375,10 @@ public class Game implements GameInterface{
             Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
         }
         world.setWorld(wp.getWorld());
+        world.setDimensions(wp.getX(), wp.getY());
         world.setName(w.getName());
     }
 
-    @Override
     public Player determineWinner() {
         Player winner = players.get(0);
         for (Player p : players)
@@ -396,20 +388,22 @@ public class Game implements GameInterface{
         return winner;
     }
     
-    @Override
     public void setSeed(int seed_)
     {
-        s = seed_;
+        s = new BigInteger(Integer.toString(seed_));
     }
     
     public void genS()
     {
-        s = s*22695477+1;
+        s = s.multiply(new BigInteger("22695477"));
+        s = s.add(new BigInteger("1"));
     }
     
     public int pseudoRandom(int n)
     {
-        int returned = ((s/65536)%16384)%n;
+        BigInteger t = s.divide(new BigInteger("65536"));
+        int i = t.remainder(new BigInteger("16384")).intValue();
+        int returned = i%n;
         genS();
         return returned;
     }

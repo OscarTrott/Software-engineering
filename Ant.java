@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package antgame;
+ 
 
 /**
  *
  * @author oscar
  */
-public class Ant implements AntInterface {
+public class Ant {
 
     int currentState;
     final int id;
@@ -68,27 +68,22 @@ public class Ant implements AntInterface {
         alive = false;
     }
     
-    @Override
     public void move() {
         
     }
 
-    @Override
     public void turnLeft(boolean left) {
         direction = left?(direction+5)%6:(direction+1)%6;
     }
 
-    @Override
     public void mark(int markNum) {
         
     }
 
-    @Override
     public void unMark() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
     public void pickUpFood() {
         hasFood = true;
     }
@@ -107,27 +102,22 @@ public class Ant implements AntInterface {
         locationY = y;
     }
     
-    @Override
     public void dropFood() {
         hasFood = false;
     }
 
-    @Override
     public void flip() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
     public void setState(int state) {
         currentState = state;
     }
 
-    @Override
     public void setResting(int period) {
         resting = period;
     }
 
-    @Override
     public int getState() {
         return currentState;
     }

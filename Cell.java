@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package antgame;
+ 
 
 /**
  *
  * @author oscar
  */
-public class Cell implements Cell_Interface {
+public class Cell {
 
     private boolean[] redMarks;
     private boolean[] blackMarks;
@@ -31,61 +31,52 @@ public class Cell implements Cell_Interface {
     {
         foodRemaining = amount;
     }
-    @Override
+
     public void setAnt(Ant a) throws Exception
     {
         if (a!=null&&ant!=null) throw new Exception("Ant already exists on cell: "+ant.getX() + ", "+ant.getY());
         ant = a;
     }
     
-    @Override
     public Ant getAnt()
     {
         return ant;
     }
     
-    @Override
     public int foodRemaining() {
         return foodRemaining;
     }
 
-    @Override
     public boolean isRocky()
     {
         return rocky;
     }
     
-    @Override
     public void reduceFood()
     {
         foodRemaining--;
     }
     
-    @Override
     public void markCell(int mark, boolean isRed) {
         if (isRed) redMarks[mark] = true;
         else blackMarks[mark] = true;
     }
 
-    @Override
     public void increaseFood() {
         foodRemaining++;
     }
 
-    @Override
     public boolean hasMark(boolean isRed, int mark) {
         if (isRed) return redMarks[mark];
         else return blackMarks[mark];
     }
     
-    @Override
     public boolean hasAnthill(boolean isRed)
     {
         if (isRed) return antHill==AntHill.RED_ANTHILL;
         else return antHill==AntHill.BLACK_ANTHILL;
     }
     
-    @Override
     public void unmark(boolean isRed, int mark)
     {
         if (isRed) redMarks[mark] = false;
