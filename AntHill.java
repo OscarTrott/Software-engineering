@@ -6,7 +6,7 @@
  
 
 /**
- *
+ * This enum represents what anthill, if any, is in any given cell
  * @author Owner
  */
 public enum AntHill {

@@ -27,5 +27,9 @@ public class Tester {
         g.randomiseWorld();
         g.startTournament();
         System.out.println("Winner: "+g.determineWinner().getName());
+        /*for (int i = 0; i < 100; i++)
+        {
+            System.out.println(g.pseudoRandom(16384));
+        }*/
     }
 }

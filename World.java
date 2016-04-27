@@ -6,31 +6,38 @@
  
 
 /**
- *
+ * This class represents the world being used for a game between any two given players
  * @author oscar
  */
 public class World {
-
-    Cell[][] layout;
-    State_Super[] redBrain;
-    State_Super[] blackBrain;
-    int sizeX;
-    int sizeY;
-    Game controller;
-    String worldName;
-    static int worldNum;
+    Cell[][] layout; //Holds the cells which are in this world
+    int sizeX; //Holds the width, in cell number, of the world
+    int sizeY; //Holds the height, in cell number, of the world
+    Game controller; //Holds the game object using this world
+    String worldName; //Holds the name of this world, if randomsied generated incrementally, if loaded the name is the filename
+    static int worldNum; //Holds the number of random worlds generated
     
+    /**
+     * @param g the game object which is creating the world
+     * @param worldName_ the name of the world, if any
+     */
     public World(Game g, String worldName_)
     {
         worldName = worldName_;
         controller = g;
     }
     
+    /**
+     * @param worldName_ sets this worlds name
+     */
     public void setName(String worldName_)
     {
         worldName = worldName_;
     }
     
+    /**
+     * Creates the initial layout of cells to the specified size, does not add any rocks, ants, anthill or food
+     */
     public void createWorld() {
         //Sets up the layout array
         layout = new Cell[sizeX][];
@@ -45,7 +52,7 @@ public class World {
     }
 
     /**
-     * Fills this world with a contest worlds specification randomly
+     * Randomises a world to the contest specification
      */
     public void randomWorld()
     {
@@ -63,13 +70,18 @@ public class World {
             addRock(0, y, false);
             addRock(sizeX-1, y, false);
         }
+        
         //Add the anthills
         addRandomRedAnthill();
         addRandomBlackAnthill();
+        
+        //Add 11 food blobs
         for (int foodCount = 0; foodCount < 11; foodCount++)
         {
             addRandomFood();
         }
+        
+        //Add 14 individual rocks
         for (int rockCount = 0; rockCount < 14; rockCount++)
         {
             addRandomRock();
@@ -84,6 +96,7 @@ public class World {
         boolean placed = false;
         while (!placed)
         {
+            //Choose a random location and try and place the anthill there
             double temp = Math.random()*(sizeX-7);
             int x = Math.round(Math.round(temp));
             temp = Math.random()*sizeY;
@@ -102,8 +115,9 @@ public class World {
     {
         boolean placed = true;
             
-        int offset = 0;
+        int offset = 0; //Holds the x-offset, needed due to the non-uniform layout of the rows
 
+        //Check the cells and nearby cells for if there are any rocks or other anthills
         for (int height = -1; height < 14; height++)
         {
             int maxWidth = height<7?7+height:19-height;
@@ -119,6 +133,8 @@ public class World {
             else
                 offset = (height+y)%2!=0?offset+1:offset;
         }
+        
+        //Places the anthill in all of the cells
         if (placed)
             for (int height = 0; height < 13; height++)
             {
@@ -143,6 +159,7 @@ public class World {
         boolean placed = false;
         while (!placed)
         {
+            //Choose a random location and try and place the anthill there
             placed = true;
             double temp = Math.random()*(sizeX-7);
             int x = Math.round(Math.round(temp));
@@ -160,8 +177,10 @@ public class World {
      */
     public boolean addBlackAnthill(int x, int y)
     {
-        int offset = 0;
+        int offset = 0; //Holds the x-offset, needed due to the non-uniform layout of the rows
         boolean placed = true;
+        
+        //Check the cells and neighbouring cells for if there is already something there
         for (int height = -1; height < 14; height++)
         {
             int maxWidth = height<7?7+height:19-height;
@@ -177,6 +196,7 @@ public class World {
             else
                 offset = (height+y)%2!=0?offset+1:offset;
         }
+        //Place the anthill in the cells
         if (placed)
             for (int height = 0; height < 13; height++)
             {
@@ -194,13 +214,14 @@ public class World {
     }
     
     /**
-     * Places a random food square in this world
+     * Places a random food rectangle in this world
      */
     public void addRandomFood()
     {
         boolean placed = false;
         while (!placed)
         {
+            //Chooses a random position in the world and attempts to place a food blob there
             double temp = Math.random()*(sizeX-7);
             int x = Math.round(Math.round(temp));
             temp = Math.random()*sizeY;
@@ -217,8 +238,9 @@ public class World {
      */
     public boolean addFood(int x, int y)
     {
-        int offset = 0;
+        int offset = 0; //Holds the x-offset, needed due to the non-uniform layout of the rows
         boolean placed = true;
+        
         //Check if all cells are free
         for (int height = -1; height < 6; height++)
         {
@@ -234,6 +256,7 @@ public class World {
             offset = (height+y)%2==0?offset-1:offset;
         }
         offset = 0;
+        //Places the ant blob
         if (placed)
         {
             for (int height = 0; height < 5; height++)
@@ -261,6 +284,7 @@ public class World {
         boolean placed = false;
         while (!placed)
         {
+            //Chooses a random location and attempts to place a rock there
             double temp = Math.random()*(sizeX-7);
             int x = Math.round(Math.round(temp));
             temp = Math.random()*sizeY;
@@ -278,8 +302,10 @@ public class World {
      */
     public boolean addRock(int x, int y, boolean surroundCheck)
     {
-        int offset = 0;
+        int offset = 0; //Holds the x-offset, needed due to the non-uniform layout of the rows
         boolean placed = true;
+        
+        //Check the neighbouring cells
         if (surroundCheck)
             for (int height = -1; height < 2; height++)
             {
@@ -294,6 +320,8 @@ public class World {
                     offset = (height+y)%2!=0?offset-1:offset;
                 }
             }
+            
+        //Places the rock
         if (placed&&!(getCell(x,y).isRocky()||getCell(x,y).hasAnthill(true)||getCell(x,y).hasAnthill(false)))
         {
             layout[x][y] = new Cell(true, AntHill.NO_ANTHILL);
@@ -318,6 +346,7 @@ public class World {
     public void placeAnts() 
     {
         int id = 0;
+        //Iterate over all cells and place ants correspondingly
         for (int y = 0; y < layout.length; y++)
         {
             for (int x = 0; x < layout[0].length; x++)
@@ -413,11 +442,11 @@ public class World {
                 break;
         }
         
+        //Returns an array of size two with the first entry being the x value and the second being the y value
         int[] result = new int[2];
         result[0] = nextX;
         result[1] = nextY;
         return result;
-        
     }
     
     /**
@@ -430,11 +459,17 @@ public class World {
         return layout[x][y];
     }
     
+    /**
+     * @param world sets the world to have this layout
+     */
     public void setWorld(Cell[][] world)
     {
         layout = world;
     }
     
+    /**
+     * @return the name of this world
+     */
     public String getName()
     {
         return worldName;
