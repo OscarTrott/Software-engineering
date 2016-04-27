@@ -255,8 +255,9 @@ public class Game{
             {
                 world.getCell(a.getX(), a.getY()).reduceFood();
                 a.pickUpFood();
-            }
-            a.setState(pickup.get_St1());
+                a.setState(pickup.get_St1());
+            } else a.setState(pickup.get_St2());
+            
         }
         else if (instruction.getClass()==State_Sense.class)
         {
