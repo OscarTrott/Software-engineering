@@ -1,3 +1,5 @@
+package antgame;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -41,7 +43,7 @@ public class Game{
     public Game()
     {
         ants = new Ant[0];
-        s = new BigInteger("12345");
+        s = new BigInteger("756375");
         world = new World(this, "World1");
         world.setDimensions(150, 150);
         for (int i = 0; i < 4; i++) genS();
@@ -108,16 +110,10 @@ public class Game{
         
         while (++currentRound!=300000){
             step(); //Step for each round
-            /*double now = System.currentTimeMillis();
-            double last = 0;*/
             if (currentRound%100==0) 
             {
-                //now = System.currentTimeMillis();
-                //System.out.println("Round: "+currentRound+", time to execute: "+(now));
                 world.printWorld();
-                Thread.sleep(1000);
-                //last = now;
-                //new BufferedReader(new InputStreamReader(System.in)).readLine();
+                Thread.sleep(4000);
             }
             
         }
@@ -221,6 +217,7 @@ public class Game{
             if (a.isRed()) stats.redKill();
             else stats.blackKill();
             a.kill();
+            world.getCell(a.getX(),a.getY()).setAnt(null);
             for (int i = 0; i < 3; i++) world.getCell(a.getX(), a.getY()).increaseFood();
             return;
         }
@@ -232,7 +229,7 @@ public class Game{
         {
             //Got to a state depending on the probability
             State_Flip flip = (State_Flip)instruction;
-            a.setState(pseudoRandom(flip.p)==0?flip.get_St1():flip.get_St2());
+            a.setState(pseudoRandom(flip.p)==0?flip.get_St2():flip.get_St1());
         }
         else if (instruction.getClass()==State_Drop.class)
         {
@@ -326,7 +323,8 @@ public class Game{
             }
             else if (sense.cond.equals("Rock"))
             {
-                if (sensedCell.isRocky()) a.setState(sense.get_St1());
+                if (sensedCell.isRocky()) 
+                    a.setState(sense.get_St1());
                 else a.setState(sense.get_St2());
             }
             else if (sense.cond.equals("FoeMarker"))

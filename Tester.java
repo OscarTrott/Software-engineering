@@ -1,3 +1,5 @@
+package antgame;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -22,8 +24,8 @@ public class Tester {
     {
         Game g = new Game();
         g.setPlayerNum(2);
-        g.addPlayer("1", new File("N:\\sample.ant"));
-        g.addPlayer("2",new File("N:\\sample.ant"));
+        g.addPlayer("1", new File("N:\\ourAnt.ant"));
+        g.addPlayer("2", new File("N:\\ourAnt.ant"));
         g.randomiseWorld();
         g.startTournament();
         System.out.println("Winner: "+g.determineWinner().getName());
