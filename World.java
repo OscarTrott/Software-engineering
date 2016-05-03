@@ -13,11 +13,19 @@
  */
 public class World {
     Cell[][] layout; //Holds the cells which are in this world
+    Cell[][] originalWorld;
     int sizeX; //Holds the width, in cell number, of the world
     int sizeY; //Holds the height, in cell number, of the world
     Game controller; //Holds the game object using this world
     String worldName; //Holds the name of this world, if randomsied generated incrementally, if loaded the name is the filename
     static int worldNum; //Holds the number of random worlds generated
+    
+    public void resetWorld()
+    {
+        for (int i = 0; i < layout.length; i++)
+            for (int j = 0; j < layout[0].length; j++) 
+                layout[i][j] = originalWorld[i][j].copy();
+    }
     
     /**
      * @param g the game object which is creating the world
@@ -43,15 +51,20 @@ public class World {
     public void createWorld() {
         //Sets up the layout array
         layout = new Cell[sizeX][];
+        originalWorld = new Cell[sizeX][];
         for (int i = 0; i < sizeX; i++)
         {
+            originalWorld[i] = new Cell[sizeY];
             layout[i] = new Cell[sizeY];
             for (int j = 0; j < layout[0].length; j++)
             {
                 layout[i][j] = new Cell(false, AntHill.NO_ANTHILL);
+                originalWorld[i][j] = new Cell(false, AntHill.NO_ANTHILL);
             }
         }
+
     }
+
 
     /**
      * Randomises a world to the contest specification
@@ -88,6 +101,10 @@ public class World {
         {
             addRandomRock();
         }
+
+        for (int i = 0; i < layout.length; i++)
+            for (int j = 0; j < layout[0].length; j++) 
+                originalWorld[i][j] = layout[i][j].copy();
     }
     
     /**
@@ -489,6 +506,7 @@ public class World {
     public void setWorld(Cell[][] world)
     {
         layout = world;
+        originalWorld = layout;
     }
     
     /**

@@ -103,23 +103,21 @@ public class Game{
      */
     public void startGame(Player p1, Player p2) throws Exception
     {
+        world.resetWorld();
         redBrain = p1.getBrain();
         blackBrain = p2.getBrain();
         currentRound = 0;
         world.placeAnts();
         stats = new Stats();
         world.printWorld();
-        Thread.sleep(500);
-        new InputStreamReader(System.in).read();
+
         while (++currentRound!=300000){
             step(); //Step for each round
-            if (currentRound%14==0) 
+            if (currentRound%299000==0) 
             {
                 world.printWorld();
-                Thread.sleep(500);
-                new InputStreamReader(System.in).read();
+                Thread.sleep(00);
             }
-            
         }
         
         //Determine the winner and increment scores
@@ -495,7 +493,7 @@ public class Game{
     {
         for (int p1 = 0; p1 < players.size(); p1++)
         {
-            for (int p2 = p1; p2 < players.size(); p2++)
+            for (int p2 = 0; p2 < players.size(); p2++)
             {
                 if (p1 != p2)
                 {

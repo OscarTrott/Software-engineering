@@ -19,6 +19,12 @@ public class Cell {
     private AntHill antHill; //Determines which anthill, if any, is contained in this cell
     private Ant ant; //Holds the ant which is currently in this cell
     
+    public Cell copy()
+    {
+        Cell c = new Cell(rocky, antHill);
+        return c;
+    }
+    
     /**
      * @param rocky_ true if the cell if rocky, false otherwise
      * @param antHill_ enum AntHill, determines what anthill exists if any
