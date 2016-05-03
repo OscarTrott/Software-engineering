@@ -1,4 +1,4 @@
-package antgame;
+ 
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -22,6 +22,11 @@ public class WorldParser {
     Cell[][] parsedWorld;
     int sizeX;
     int sizeY;
+    boolean[][] checked;
+    int rocks = 0;
+    int food = 0;
+    int redAnthill = 0;
+    int blackAnthill = 0;
     
     public void loadWorld(File f) throws FileNotFoundException, IOException, Exception
     {
@@ -32,8 +37,11 @@ public class WorldParser {
         sizeX = x;
         sizeY = y;
         parsedWorld = new Cell[x][];
+        checked = new boolean[sizeX][];
+        
         for (int i = 0; i < x; i++)
         {
+            checked[i] = new boolean[sizeY];
             parsedWorld[i] = new Cell[y];
         }
         String line = null;
@@ -106,41 +114,37 @@ public class WorldParser {
                 return false;
         }
         
-        int rocks = 0;
-        int food = 0;
-        int redAnthill = 0;
-        int blackAnthill = 0;
-        
-        for (int x = 1; x < sizeX-1; x++)
+
+        for (int y = 1; y < sizeY-1; y++)
         {
-            for (int y = 1; y < sizeY-1; y++)
+            for (int x = 1; x < sizeX-1; x++)
             {
                 if (parsedWorld[x][y].hasAnthill(true))
                 {
-                    redAnthill++;
+
                     if (!checkAntHill(x,y,true)) 
                         return false;
                 } else if (parsedWorld[x][y].hasAnthill(false)) {
-                    blackAnthill++;
+
                     if (!checkAntHill(x,y,false)) 
                         return false;
                 } else if (parsedWorld[x][y].isRocky()) {
-                    rocks++;
+
                     if (!checkRock(x,y)) 
                         return false;
                 } else if (parsedWorld[x][y].foodRemaining()>0) {
-                    food++;
+                    
                     if (!checkFood(x,y)) 
                         return false;
                 }
             }
         }
-        
         return (rocks==14&&food==11&&redAnthill==1&&blackAnthill==1);
     }
     
     boolean checkAntHill(int x, int y, boolean isRed)
     {
+        if (checked[x][y]) return true;
         int offset = 0;
         //Check the cells and nearby cells for if there are any rocks or other anthills
         for (int height = -1; height < 14; height++)
@@ -148,7 +152,7 @@ public class WorldParser {
             int maxWidth = height<7?7+height:19-height;
             for (int width = 0; width < maxWidth+2; width++)
             {
-                if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||parsedWorld[x+width+offset][y+height].isRocky()||parsedWorld[x+width+offset][y+height].hasAnthill(isRed)) //Need not check for anthills or food as they do not yet exist
+                if (y+height<0||y+height>sizeY-1||x+width+offset<0||x+width+offset>sizeX-1||parsedWorld[x+width+offset][y+height].isRocky()||parsedWorld[x+width+offset][y+height].hasAnthill(!isRed)) //Need not check for anthills or food as they do not yet exist
                 {
                     return false;
                 }
@@ -158,24 +162,32 @@ public class WorldParser {
             else
                 offset = (height+y)%2!=0?offset+1:offset;
         }
-        
+        offset = 0;
         for (int height = 0; height < 13; height++)
         {
             int maxWidth = height<7?7+height:19-height;
             for (int width = 0; width < maxWidth; width++)
             {
-                if (!parsedWorld[x+width+offset][y+height].hasAnthill(isRed)) return false;
+                if (!parsedWorld[x+width+offset][y+height].hasAnthill(isRed)) 
+                {
+                    parsedWorld[x+width+offset][y+height] = new Cell(true, AntHill.NO_ANTHILL);
+                    return false;
+                }
+                checked[x+width+offset][y+height] = true;
             }
             if (height<6)
                 offset = (height+y)%2==0?offset-1:offset;
             else
                 offset = (height+y)%2!=0?offset+1:offset;
         }
+        if (isRed) redAnthill++;
+        else blackAnthill++;
         return true;
     }
     
     boolean checkRock(int x, int y)
     {
+        if (checked[x][y]) return true;
         int offset = 0;
         for (int height = -1; height < 2; height++)
         {
@@ -206,11 +218,14 @@ public class WorldParser {
         {
             return false;
         }
+        checked[x][y] = true;
+        rocks++;
         return true;
     }
     
     boolean checkFood(int x, int y)
     {
+        if (checked[x][y]) return true;
         int offset = 0;
         //Check if all cells are free
         for (int height = -1; height < 6; height++)
@@ -245,14 +260,17 @@ public class WorldParser {
 
             for (int width = 0; width < 5; width++)
             {
-                if (parsedWorld[x+width+offset][y+height].foodRemaining()!=5)
+                int foodRemaining = parsedWorld[x+width+offset][y+height].foodRemaining();
+                
+                if (foodRemaining!=5)
                 {
                     return false;
                 }
-
+                checked[x+width+offset][y+height] = true;
             }
             offset = (height+y)%2==0?offset-1:offset;
         }
+        food++;
         return true;
     }
 }

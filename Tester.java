@@ -1,4 +1,4 @@
-package antgame;
+ 
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -24,14 +24,16 @@ public class Tester {
     {
         Game g = new Game();
         g.setPlayerNum(2);
-        g.addPlayer("1", new File("ourAnt.ant"));
-        g.addPlayer("2", new File("ourAnt.ant"));
-        System.out.println(g.loadWorld(new File("world.world")));
+        g.addPlayer("1", new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\ourAnt.ant"));
+        g.addPlayer("2", new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\ourAnt.ant"));
+        System.out.println(g.loadWorld(new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\world.world")));
         g.startTournament();
         System.out.println("Winner: "+g.determineWinner().getName());
         /*for (int i = 0; i < 100; i++)
         {
             System.out.println(g.pseudoRandom(16384));
         }*/
+        
+        
     }
 }
