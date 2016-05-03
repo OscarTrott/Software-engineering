@@ -113,10 +113,11 @@ public class Game{
 
         while (++currentRound!=300000){
             step(); //Step for each round
-            if (currentRound%299000==0) 
+            if (currentRound%14==0) 
             {
                 world.printWorld();
-                Thread.sleep(00);
+                Thread.sleep(4000);
+                new InputStreamReader(System.in);
             }
         }
         

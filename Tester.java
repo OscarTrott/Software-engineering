@@ -24,8 +24,8 @@ public class Tester {
     {
         Game g = new Game();
         g.setPlayerNum(2);
-        g.addPlayer("1", new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\ourAnt.ant"));
-        g.addPlayer("2", new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\ourAnt.ant"));
+        g.addPlayer("1", new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\antbrain.ant"));
+        g.addPlayer("2", new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\antbrain.ant"));
         g.randomiseWorld();//System.out.println(g.loadWorld(new File("\\\\smbhome.uscs.susx.ac.uk\\ojt21\\Desktop\\world.world")));
         g.startTournament();
         System.out.println("Winner: "+g.determineWinner().getName());

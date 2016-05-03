@@ -22,6 +22,7 @@ public class Cell {
     public Cell copy()
     {
         Cell c = new Cell(rocky, antHill);
+        c.setFood(foodRemaining);
         return c;
     }
     
