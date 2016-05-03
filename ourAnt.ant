@@ -1,0 +1,99 @@
+Sense Ahead 1 2 Friend
+Turn Left 0
+Move 21 3
+Sense Ahead 4 10 Friend
+Turn Right 5
+Move 7 6
+Turn Left 2
+Turn Left 8
+Move 9 8
+Turn Right 2
+Sense Ahead 11 2 Rock
+Sense LeftAhead 12 15 Rock
+Turn Left 13
+Sense LeftAhead 14 16 Rock
+Turn Left 17
+Mark 0 19
+Mark 1 19
+Mark 2 19
+Flip 5 21 19
+Turn Left 18
+Sense Ahead 2 18 Rock
+Sense Ahead 22 2 Food
+Move 30 23
+Sense Ahead 24 22 Friend
+Turn Right 25
+Move 26 27
+Turn Left 22
+Turn Left 28
+Move 29 28
+Turn Right 22
+PickUp 31 21
+Turn Left 32
+Turn Left 33
+Turn Left 35
+Move 42 35
+Sense Ahead 36 42 Friend
+Turn Right 37
+Move 39 38
+Turn Left 34
+Turn Left 40
+Move 41 40
+Turn Right 42
+Sense Ahead 46 43 Marker 0
+Sense Ahead 60 44 Marker 1
+Sense Ahead 62 45 Marker 2
+Sense Ahead 64 34 Home
+Mark 3 47
+Move 55 48
+Sense Ahead 49 47 Friend
+Turn Right 50
+Move 52 51
+Turn Left 47
+Turn Left 53
+Move 54 53
+Turn Right 47
+Sense LeftAhead 56 57 Rock
+Turn Left 55
+Turn Left 58
+Turn Left 59
+Turn Left 34
+Sense LeftAhead 61 58 Rock
+Turn Left 60
+Sense LeftAhead 63 59 Rock
+Turn Left 62
+Move 72 65
+Sense Ahead 66 64 Friend
+Turn Right 67
+Move 69 68
+Turn Left 64
+Turn Left 70
+Move 71 70
+Turn Right 64
+Drop 73
+Turn Left 74
+Turn Left 75
+Turn Left 76
+Move 84 77
+Sense Ahead 78 76 Friend
+Turn Right 79
+Move 81 80
+Turn Left 76
+Turn Left 82
+Move 83 82
+Turn Right 76
+Sense Ahead 34 85 Food
+Sense Ahead 89 86 Marker 0
+Sense Ahead 89 87 Marker 1
+Sense Ahead 89 88 Marker 2
+Sense Ahead 2 76 Rock
+Move 97 90
+Sense Ahead 91 89 Friend
+Turn Right 92
+Move 94 93
+Turn Left 89
+Turn Left 95
+Move 96 95
+Turn Right 89
+Sense Ahead 76 98 Marker 3
+Turn Left 97
